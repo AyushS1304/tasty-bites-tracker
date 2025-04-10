@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
@@ -12,19 +11,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { createClient } from "@supabase/supabase-js";
+import { useSupabase } from "@/context/SupabaseContext";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
 import { User, MapPin, Phone, Save, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-// Initialize Supabase client
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
-
 const Profile = () => {
-  const [user, setUser] = useState(null);
+  const { user, supabase } = useSupabase();
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -37,23 +31,16 @@ const Profile = () => {
   useEffect(() => {
     const getProfile = async () => {
       try {
-        // Get user session
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError) throw sessionError;
-        
-        if (!session) {
+        if (!user) {
           navigate("/auth");
           return;
         }
-        
-        setUser(session.user);
         
         // Get profile data from table
         const { data, error } = await supabase
           .from('profiles')
           .select('name, phone, address')
-          .eq('id', session.user.id)
+          .eq('id', user.id)
           .single();
         
         if (data) {
@@ -73,7 +60,7 @@ const Profile = () => {
     };
     
     getProfile();
-  }, [navigate]);
+  }, [user, navigate, supabase]);
 
   const updateProfile = async (e) => {
     e.preventDefault();

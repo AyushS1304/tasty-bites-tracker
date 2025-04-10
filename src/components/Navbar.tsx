@@ -1,10 +1,10 @@
-
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ShoppingCart, Search, Menu, X, User, LogIn, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useStore } from "@/context/StoreContext";
+import { useSupabase } from "@/context/SupabaseContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,49 +12,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { createClient } from "@supabase/supabase-js";
 import { useToast } from "@/components/ui/use-toast";
-
-// Initialize Supabase client
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 const Navbar = () => {
   const { state } = useStore();
+  const { user, loading: isAuthLoading, signOut } = useSupabase();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [user, setUser] = useState(null);
-  const [isAuthLoading, setIsAuthLoading] = useState(true);
   const location = useLocation();
   const { toast } = useToast();
   
   const cartItemCount = state.cart.reduce((total, item) => total + item.quantity, 0);
 
-  useEffect(() => {
-    // Check active session on load
-    const checkSession = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (session) {
-        setUser(session.user);
-      }
-      setIsAuthLoading(false);
-    };
-    
-    checkSession();
-
-    // Set up auth state change listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setUser(session?.user || null);
-      }
-    );
-
-    return () => subscription.unsubscribe();
-  }, []);
-
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
+    await signOut();
     toast({
       title: "Signed out successfully",
       description: "Hope to see you again soon!",
@@ -62,7 +33,7 @@ const Navbar = () => {
   };
 
   // Close mobile menu when route changes
-  useEffect(() => {
+  useState(() => {
     setIsMenuOpen(false);
   }, [location.pathname]);
 
