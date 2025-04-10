@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ShoppingCart, Search, Menu, X, User, LogIn, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -32,8 +32,7 @@ const Navbar = () => {
     });
   };
 
-  // Close mobile menu when route changes
-  useState(() => {
+  useEffect(() => {
     setIsMenuOpen(false);
   }, [location.pathname]);
 
