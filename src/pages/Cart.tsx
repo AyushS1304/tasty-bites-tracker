@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useStore, CartItem } from "@/context/StoreContext";
+import { useStore } from "@/context/StoreContext";
 import { Button } from "@/components/ui/button";
 import {
   Minus,
@@ -37,7 +37,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Helmet } from "react-helmet-async";
 import type { CartItem } from "@/types/cart";
 
-const CartItem = ({ item }: { item: CartItem }) => {
+const CartItemComponent = ({ item }: { item: CartItem }) => {
   const { updateQuantity, removeFromCart } = useStore();
 
   const handleQuantityChange = (newQuantity: number) => {
@@ -237,7 +237,7 @@ const Cart = () => {
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
               {cart.map((item) => (
-                <CartItem key={item.id} item={item} />
+                <CartItemComponent key={item.id} item={item} />
               ))}
               <div className="mt-6 flex items-end justify-between">
                 <div className="flex items-center gap-2">
