@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
@@ -13,16 +12,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { createClient } from "@supabase/supabase-js";
+import { useSupabase } from "@/context/SupabaseContext";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
 import { Mail, Lock, UserPlus, LogIn, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-
-// Initialize Supabase client
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -33,6 +27,7 @@ const Auth = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("login");
+  const { user, signIn, signUp } = useSupabase();
 
   // Redirect if already logged in
   useEffect(() => {
@@ -52,10 +47,7 @@ const Auth = () => {
     setAuthError("");
     
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const { error } = await signIn(email, password);
       
       if (error) throw error;
       
@@ -90,13 +82,7 @@ const Auth = () => {
     }
     
     try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: window.location.origin,
-        },
-      });
+      const { error } = await signUp(email, password);
       
       if (error) throw error;
       
