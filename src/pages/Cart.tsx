@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useStore, CartItem } from "@/context/StoreContext";
 import { Button } from "@/components/ui/button";
@@ -36,6 +35,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Helmet } from "react-helmet-async";
+import type { CartItem } from "@/types/cart";
 
 const CartItem = ({ item }: { item: CartItem }) => {
   const { updateQuantity, removeFromCart } = useStore();
