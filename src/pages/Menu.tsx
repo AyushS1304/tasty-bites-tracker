@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import FoodCard from "@/components/FoodCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { X, Filter } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 
 const Menu = () => {
@@ -81,27 +81,34 @@ const Menu = () => {
           )}
         </div>
 
-        <Tabs defaultValue="all" className="mb-8">
-          <TabsList className="mb-4 flex overflow-x-auto pb-1 justify-start">
-            <TabsTrigger
-              value="all"
-              className="px-4"
-              onClick={() => setActiveCategory("all")}
-            >
-              All
-            </TabsTrigger>
-            {categories.map((category) => (
-              <TabsTrigger
-                key={category}
-                value={category}
-                className="px-4 whitespace-nowrap"
-                onClick={() => setActiveCategory(category)}
-              >
-                {category}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
+        <div className="mb-8">
+          <h2 className="text-lg font-medium mb-3 flex items-center">
+            <Filter className="h-4 w-4 mr-2" /> Filter by Category
+          </h2>
+          <div className="overflow-x-auto pb-2">
+            <Tabs defaultValue="all" className="w-full">
+              <TabsList className="flex overflow-x-auto pb-1 justify-start h-auto">
+                <TabsTrigger
+                  value="all"
+                  className="px-4 py-2 whitespace-nowrap"
+                  onClick={() => setActiveCategory("all")}
+                >
+                  All Items
+                </TabsTrigger>
+                {categories.map((category) => (
+                  <TabsTrigger
+                    key={category}
+                    value={category}
+                    className="px-4 py-2 whitespace-nowrap"
+                    onClick={() => setActiveCategory(category)}
+                  >
+                    {category}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
+          </div>
+        </div>
 
         {filteredItems.length === 0 ? (
           <div className="text-center py-20">
