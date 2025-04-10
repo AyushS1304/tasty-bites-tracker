@@ -27,19 +27,14 @@ const Auth = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("login");
-  const { user, signIn, signUp } = useSupabase();
+  const { user, signIn, signUp, supabase } = useSupabase();
 
   // Redirect if already logged in
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        navigate("/");
-      }
-    };
-    
-    checkAuth();
-  }, [navigate]);
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
 
   const handleSignIn = async (e) => {
     e.preventDefault();
