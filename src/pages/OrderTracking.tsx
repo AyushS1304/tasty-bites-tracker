@@ -19,17 +19,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Steps,
-  StepIndicator,
-  StepStatus,
-  StepTitle,
-  StepDescription,
-  StepSeparator,
-  useSteps,
-  Stepper,
-  Step,
-} from "@chakra-ui/react";
 import { Button } from "@/components/ui/button";
 import { Helmet } from "react-helmet-async";
 
