@@ -7,9 +7,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import FoodCard from "@/components/FoodCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { X, Filter, Search } from "lucide-react";
+import { X, Filter } from "lucide-react";
 import { Helmet } from "react-helmet-async";
-import { Input } from "@/components/ui/input";
+import SearchDropdown from "@/components/SearchDropdown";
 
 const Menu = () => {
   const [activeCategory, setActiveCategory] = useState<string>("all");
@@ -76,13 +76,13 @@ const Menu = () => {
   };
 
   // Handle search input changes
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
     
     // Update URL with search param
     const newParams = new URLSearchParams(searchParams);
-    if (e.target.value) {
-      newParams.set("search", e.target.value);
+    if (query) {
+      newParams.set("search", query);
     } else {
       newParams.delete("search");
     }
@@ -94,6 +94,22 @@ const Menu = () => {
     setSearchQuery("");
     const newParams = new URLSearchParams(searchParams);
     newParams.delete("search");
+    setSearchParams(newParams);
+  };
+
+  // Handle selecting an item from search dropdown
+  const handleSelectSearchItem = (item: FoodItem) => {
+    setSearchQuery(item.name);
+    const category = item.category;
+    
+    // Set category if it exists
+    if (categories.includes(category)) {
+      setActiveCategory(category);
+    }
+    
+    // Update URL with search param
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set("search", item.name);
     setSearchParams(newParams);
   };
 
@@ -121,25 +137,18 @@ const Menu = () => {
           </div>
         </div>
         
-        {/* Search bar */}
+        {/* Search dropdown with recommendations */}
         <div className="mb-6">
-          <div className="relative max-w-md mx-auto mb-4">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-            <Input
-              type="text"
+          <div className="max-w-md mx-auto mb-4">
+            <SearchDropdown
+              searchQuery={searchQuery}
+              items={foodItems}
+              onSelect={handleSelectSearchItem}
+              onSearchChange={handleSearchChange}
+              onClear={handleClearSearch}
               placeholder="Search for dishes, categories..."
-              value={searchQuery}
-              onChange={handleSearchChange}
-              className="pl-10 pr-10 py-2 w-full"
+              className="w-full"
             />
-            {searchQuery && (
-              <button 
-                onClick={handleClearSearch}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2"
-              >
-                <X className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-              </button>
-            )}
           </div>
         </div>
 

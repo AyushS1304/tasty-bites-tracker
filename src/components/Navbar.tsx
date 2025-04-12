@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import { ShoppingCart, Search, Menu, X, User, LogIn, LogOut } from "lucide-react";
+import { ShoppingCart, User, LogIn, LogOut, Menu as MenuIcon, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useStore } from "@/context/StoreContext";
 import { useSupabase } from "@/context/SupabaseContext";
+import SearchDropdown from "@/components/SearchDropdown";
+import { foodItems } from "@/utils/data";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,7 +20,7 @@ const Navbar = () => {
   const { user, loading: isAuthLoading, signOut } = useSupabase();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -47,16 +48,23 @@ const Navbar = () => {
     setIsMenuOpen(false);
   }, [location.pathname]);
 
-  const isActive = (path) => {
+  const isActive = (path: string) => {
     return location.pathname === path ? "text-orange-500" : "text-gray-700";
   };
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/menu?search=${encodeURIComponent(searchQuery.trim())}`);
-    }
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
   };
+
+  const handleClearSearch = () => {
+    setSearchQuery("");
+  };
+
+  const handleSelectSearchItem = (item: any) => {
+    navigate(`/menu?search=${encodeURIComponent(item.name)}`);
+  };
+
+  
 
   return (
     <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md shadow-sm">
@@ -81,16 +89,17 @@ const Navbar = () => {
             >
               Menu
             </Link>
-            <form onSubmit={handleSearchSubmit} className="relative flex items-center">
-              <Search className="absolute left-3 h-4 w-4 text-gray-400" />
-              <Input
-                type="text"
+            <div className="w-72">
+              <SearchDropdown
+                searchQuery={searchQuery}
+                items={foodItems}
+                onSelect={handleSelectSearchItem}
+                onSearchChange={handleSearchChange}
+                onClear={handleClearSearch}
                 placeholder="Search foods..."
-                className="pl-10 w-72 h-10 bg-gray-50 border-gray-200 focus:border-orange-500 focus:ring-orange-500"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full"
               />
-            </form>
+            </div>
           </div>
 
           <div className="flex items-center gap-4">
@@ -156,23 +165,24 @@ const Navbar = () => {
               className="md:hidden hover:bg-gray-100"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {isMenuOpen ? <X className="h-6 w-6" /> : <MenuIcon className="h-6 w-6" />}
             </Button>
           </div>
         </div>
 
         {isMenuOpen && (
           <div className="md:hidden mt-4 pb-4 space-y-4 animate-fade-in">
-            <form onSubmit={handleSearchSubmit} className="relative flex items-center mb-4">
-              <Search className="absolute left-3 h-4 w-4 text-gray-400" />
-              <Input
-                type="text"
+            <div className="relative mb-4">
+              <SearchDropdown
+                searchQuery={searchQuery}
+                items={foodItems}
+                onSelect={handleSelectSearchItem}
+                onSearchChange={handleSearchChange}
+                onClear={handleClearSearch}
                 placeholder="Search foods..."
-                className="pl-10 w-full bg-gray-50"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full"
               />
-            </form>
+            </div>
             <Link 
               to="/" 
               className={`block py-2 font-medium hover:text-orange-500 transition-colors ${isActive("/")}`}
