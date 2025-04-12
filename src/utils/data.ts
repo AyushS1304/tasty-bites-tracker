@@ -1,4 +1,3 @@
-
 import { FoodItem } from "@/context/StoreContext";
 
 export const cuisines = [
@@ -69,7 +68,7 @@ export const foodItems: FoodItem[] = [
     id: "1",
     name: "Butter Chicken",
     description: "Tender chicken cooked in a creamy tomato sauce with Indian spices",
-    price: 350,
+    price: 199,
     image: "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?q=80&w=800&auto=format&fit=crop",
     category: "Main Course",
     cuisine: "indian",
@@ -79,7 +78,7 @@ export const foodItems: FoodItem[] = [
     id: "2",
     name: "Paneer Tikka",
     description: "Marinated cottage cheese grilled to perfection with bell peppers and onions",
-    price: 250,
+    price: 149,
     image: "https://images.unsplash.com/photo-1567188040759-fb8a973be911?q=80&w=800&auto=format&fit=crop",
     category: "Appetizers",
     cuisine: "indian",
@@ -89,7 +88,7 @@ export const foodItems: FoodItem[] = [
     id: "3",
     name: "Masala Dosa",
     description: "Crispy rice and lentil crepe filled with spiced potatoes",
-    price: 150,
+    price: 99,
     image: "https://images.unsplash.com/photo-1627462900813-fa656480e253?q=80&w=800&auto=format&fit=crop",
     category: "Breakfast",
     cuisine: "indian",

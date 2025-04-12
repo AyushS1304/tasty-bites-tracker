@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { ShoppingCart, Search, Menu, X, User, LogIn, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,10 +19,21 @@ const Navbar = () => {
   const { user, loading: isAuthLoading, signOut } = useSupabase();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchParams] = useSearchParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const { toast } = useToast();
   
   const cartItemCount = state.cart.reduce((total, item) => total + item.quantity, 0);
+
+  useEffect(() => {
+    const searchParam = searchParams.get("search");
+    if (searchParam) {
+      setSearchQuery(searchParam);
+    } else {
+      setSearchQuery("");
+    }
+  }, [searchParams]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -38,6 +49,13 @@ const Navbar = () => {
 
   const isActive = (path) => {
     return location.pathname === path ? "text-orange-500" : "text-gray-700";
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/menu?search=${encodeURIComponent(searchQuery.trim())}`);
+    }
   };
 
   return (
@@ -63,7 +81,7 @@ const Navbar = () => {
             >
               Menu
             </Link>
-            <div className="relative flex items-center">
+            <form onSubmit={handleSearchSubmit} className="relative flex items-center">
               <Search className="absolute left-3 h-4 w-4 text-gray-400" />
               <Input
                 type="text"
@@ -72,7 +90,7 @@ const Navbar = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-            </div>
+            </form>
           </div>
 
           <div className="flex items-center gap-4">
@@ -145,7 +163,7 @@ const Navbar = () => {
 
         {isMenuOpen && (
           <div className="md:hidden mt-4 pb-4 space-y-4 animate-fade-in">
-            <div className="relative flex items-center mb-4">
+            <form onSubmit={handleSearchSubmit} className="relative flex items-center mb-4">
               <Search className="absolute left-3 h-4 w-4 text-gray-400" />
               <Input
                 type="text"
@@ -154,7 +172,7 @@ const Navbar = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-            </div>
+            </form>
             <Link 
               to="/" 
               className={`block py-2 font-medium hover:text-orange-500 transition-colors ${isActive("/")}`}

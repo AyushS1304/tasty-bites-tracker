@@ -43,6 +43,11 @@ const FoodCard = ({ item }: FoodCardProps) => {
     }, 500);
   };
 
+  // Format currency for display
+  const formatPrice = (price: number) => {
+    return `₹${price}`;
+  };
+
   return (
     <div className="bg-white rounded-lg overflow-hidden shadow-md food-card-shadow transition-all hover:shadow-lg">
       <div className="relative h-48 overflow-hidden">
@@ -64,7 +69,7 @@ const FoodCard = ({ item }: FoodCardProps) => {
             <p className="text-sm text-gray-600 mb-2">{item.category}</p>
           </div>
           <div className="bg-orange-50 text-orange-700 font-medium px-2 py-1 rounded text-sm">
-            ₹{item.price}
+            {formatPrice(item.price)}
           </div>
         </div>
         
