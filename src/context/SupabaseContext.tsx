@@ -3,6 +3,9 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { createClient, SupabaseClient, User } from "@supabase/supabase-js";
 import { supabaseConfig } from "@/config/supabase";
 
+// Create a single supabase instance outside of the component
+const supabaseInstance = createClient(supabaseConfig.url, supabaseConfig.anonKey);
+
 type SupabaseContextType = {
   supabase: SupabaseClient;
   user: User | null;
@@ -17,7 +20,8 @@ const SupabaseContext = createContext<SupabaseContextType | undefined>(undefined
 export const SupabaseProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const supabase = createClient(supabaseConfig.url, supabaseConfig.anonKey);
+  // Use the single instance instead of creating a new one
+  const supabase = supabaseInstance;
 
   useEffect(() => {
     const getUser = async () => {
@@ -35,7 +39,7 @@ export const SupabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     };
 
     getUser();
-  }, [supabase.auth]);
+  }, []);
 
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
