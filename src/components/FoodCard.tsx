@@ -2,8 +2,10 @@
 import { useState } from "react";
 import { FoodItem, useStore } from "@/context/StoreContext";
 import { Button } from "@/components/ui/button";
-import { Plus, Check, Star } from "lucide-react";
+import { Plus, Check, Star, LogIn } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { useSupabase } from "@/context/SupabaseContext";
+import { Link } from "react-router-dom";
 
 interface FoodCardProps {
   item: FoodItem;
@@ -12,11 +14,21 @@ interface FoodCardProps {
 const FoodCard = ({ item }: FoodCardProps) => {
   const { state, addToCart } = useStore();
   const { toast } = useToast();
+  const { user } = useSupabase();
   const [isAdding, setIsAdding] = useState(false);
 
   const isInCart = state.cart.some((cartItem) => cartItem.id === item.id);
 
   const handleAddToCart = () => {
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to add items to your cart.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setIsAdding(true);
     addToCart(item);
     
@@ -58,25 +70,33 @@ const FoodCard = ({ item }: FoodCardProps) => {
         
         <p className="text-gray-600 text-sm mb-4 line-clamp-2">{item.description}</p>
         
-        <Button
-          onClick={handleAddToCart}
-          className={`w-full ${
-            isInCart
-              ? "bg-green-600 hover:bg-green-700"
-              : "bg-orange-500 hover:bg-orange-600"
-          }`}
-          disabled={isAdding}
-        >
-          {isInCart ? (
-            <>
-              <Check className="mr-2 h-4 w-4" /> Added
-            </>
-          ) : (
-            <>
-              <Plus className="mr-2 h-4 w-4" /> Add to Cart
-            </>
-          )}
-        </Button>
+        {user ? (
+          <Button
+            onClick={handleAddToCart}
+            className={`w-full ${
+              isInCart
+                ? "bg-green-600 hover:bg-green-700"
+                : "bg-orange-500 hover:bg-orange-600"
+            }`}
+            disabled={isAdding}
+          >
+            {isInCart ? (
+              <>
+                <Check className="mr-2 h-4 w-4" /> Added
+              </>
+            ) : (
+              <>
+                <Plus className="mr-2 h-4 w-4" /> Add to Cart
+              </>
+            )}
+          </Button>
+        ) : (
+          <Button asChild className="w-full bg-blue-500 hover:bg-blue-600">
+            <Link to="/auth">
+              <LogIn className="mr-2 h-4 w-4" /> Sign in to Add
+            </Link>
+          </Button>
+        )}
       </div>
     </div>
   );
