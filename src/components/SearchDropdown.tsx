@@ -2,7 +2,14 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { FoodItem } from "@/context/StoreContext";
-import { Command, CommandInput, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
+import { 
+  Command,
+  CommandInput,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandList
+} from "@/components/ui/command";
 import { Search } from "lucide-react";
 
 interface SearchDropdownProps {
@@ -113,31 +120,33 @@ const SearchDropdown = ({
       {open && (
         <div className="absolute z-50 mt-1 w-full rounded-md border bg-popover shadow-md">
           <Command className="rounded-lg border shadow-md">
-            <CommandEmpty>No results found.</CommandEmpty>
-            {recommendations.length > 0 && (
-              <CommandGroup heading={searchQuery ? "Search Results" : "Popular Items"}>
-                {recommendations.map((item) => (
-                  <CommandItem
-                    key={item.id}
-                    onSelect={() => handleSelect(item)}
-                    className="cursor-pointer flex items-center gap-2 p-2 hover:bg-accent"
-                  >
-                    <div className="h-8 w-8 overflow-hidden rounded-md">
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="font-medium">{item.name}</span>
-                      <span className="text-xs text-muted-foreground">{item.category} • {item.cuisine}</span>
-                    </div>
-                    <div className="ml-auto font-medium">₹{item.price}</div>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            )}
+            <CommandList>
+              <CommandEmpty>No results found.</CommandEmpty>
+              {recommendations.length > 0 && (
+                <CommandGroup heading={searchQuery ? "Search Results" : "Popular Items"}>
+                  {recommendations.map((item) => (
+                    <CommandItem
+                      key={item.id}
+                      onSelect={() => handleSelect(item)}
+                      className="cursor-pointer flex items-center gap-2 p-2 hover:bg-accent"
+                    >
+                      <div className="h-8 w-8 overflow-hidden rounded-md">
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{item.name}</span>
+                        <span className="text-xs text-muted-foreground">{item.category} • {item.cuisine}</span>
+                      </div>
+                      <div className="ml-auto font-medium">₹{item.price}</div>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              )}
+            </CommandList>
           </Command>
         </div>
       )}
