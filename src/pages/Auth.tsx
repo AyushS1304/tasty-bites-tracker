@@ -27,7 +27,7 @@ const Auth = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("login");
-  const { user, signIn, signUp, supabase } = useSupabase();
+  const { user, signIn, signUp } = useSupabase();
 
   // Redirect if already logged in
   useEffect(() => {
@@ -44,21 +44,29 @@ const Auth = () => {
     try {
       const { error } = await signIn(email, password);
       
-      if (error) throw error;
-      
-      toast({
-        title: "Signed in successfully",
-        description: "Welcome back to TastyBites!",
-      });
-      
-      // Redirect to home page
-      navigate("/");
+      if (error) {
+        setAuthError(error.message || "Failed to sign in. Please try again.");
+        toast({
+          variant: "destructive",
+          title: "Sign in failed",
+          description: error.message || "Failed to sign in. Please try again.",
+        });
+      } else {
+        toast({
+          title: "Signed in successfully",
+          description: "Welcome back to TastyBites!",
+        });
+        
+        // Redirect to home page
+        navigate("/");
+      }
     } catch (error) {
-      setAuthError(error.message);
+      console.error("Sign in error:", error);
+      setAuthError("An unexpected error occurred. Please try again.");
       toast({
         variant: "destructive",
         title: "Sign in failed",
-        description: error.message,
+        description: "An unexpected error occurred. Please try again.",
       });
     } finally {
       setIsLoading(false);
@@ -79,21 +87,29 @@ const Auth = () => {
     try {
       const { error } = await signUp(email, password);
       
-      if (error) throw error;
-      
-      toast({
-        title: "Registration successful",
-        description: "Please check your email to verify your account.",
-      });
-      
-      // Switch to login tab
-      setActiveTab("login");
+      if (error) {
+        setAuthError(error.message || "Failed to create account. Please try again.");
+        toast({
+          variant: "destructive",
+          title: "Registration failed",
+          description: error.message || "Failed to create account. Please try again.",
+        });
+      } else {
+        toast({
+          title: "Registration successful",
+          description: "Please check your email to verify your account.",
+        });
+        
+        // Switch to login tab
+        setActiveTab("login");
+      }
     } catch (error) {
-      setAuthError(error.message);
+      console.error("Sign up error:", error);
+      setAuthError("An unexpected error occurred. Please try again.");
       toast({
         variant: "destructive",
         title: "Registration failed",
-        description: error.message,
+        description: "An unexpected error occurred. Please try again.",
       });
     } finally {
       setIsLoading(false);

@@ -6,6 +6,7 @@ import { Plus, Check, Star, LogIn } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useSupabase } from "@/context/SupabaseContext";
 import { Link } from "react-router-dom";
+import { handleImageError, getImageWithFallback } from "@/utils/imageUtils";
 
 interface FoodCardProps {
   item: FoodItem;
@@ -52,8 +53,9 @@ const FoodCard = ({ item }: FoodCardProps) => {
     <div className="bg-white rounded-lg overflow-hidden shadow-md food-card-shadow transition-all hover:shadow-lg">
       <div className="relative h-48 overflow-hidden">
         <img
-          src={item.image}
+          src={getImageWithFallback(item.image)}
           alt={item.name}
+          onError={handleImageError}
           className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
         />
         <div className="absolute top-2 right-2 bg-white bg-opacity-90 rounded-full px-2 py-1 flex items-center">

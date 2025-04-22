@@ -11,6 +11,7 @@ import {
   CommandList
 } from "@/components/ui/command";
 import { Search } from "lucide-react";
+import { handleImageError, getImageWithFallback } from "@/utils/imageUtils";
 
 interface SearchDropdownProps {
   searchQuery: string;
@@ -52,9 +53,12 @@ const SearchDropdown = ({
 
   // Update recommendations when search query changes
   useEffect(() => {
+    // Ensure items is an array before trying to operate on it
+    const foodItems = Array.isArray(items) ? items : [];
+    
     if (!searchQuery) {
       // When empty, recommend popular items
-      const popularItems = [...items]
+      const popularItems = [...foodItems]
         .sort((a, b) => b.rating - a.rating)
         .slice(0, 5);
       setRecommendations(popularItems);
@@ -64,7 +68,7 @@ const SearchDropdown = ({
     const query = searchQuery.toLowerCase();
     
     // Direct matches
-    const directMatches = items.filter(
+    const directMatches = foodItems.filter(
       item => item.name.toLowerCase().includes(query) || 
               item.category.toLowerCase().includes(query) ||
               item.cuisine.toLowerCase().includes(query)
@@ -72,7 +76,7 @@ const SearchDropdown = ({
     
     // Additional recommendation logic - related items based on category
     const categoryMatches = directMatches.length > 0 
-      ? items.filter(item => 
+      ? foodItems.filter(item => 
           !directMatches.includes(item) && 
           directMatches.some(match => match.category === item.category)
         ).slice(0, 3)
@@ -132,8 +136,9 @@ const SearchDropdown = ({
                     >
                       <div className="h-8 w-8 overflow-hidden rounded-md">
                         <img
-                          src={item.image}
+                          src={getImageWithFallback(item.image)}
                           alt={item.name}
+                          onError={handleImageError}
                           className="h-full w-full object-cover"
                         />
                       </div>
