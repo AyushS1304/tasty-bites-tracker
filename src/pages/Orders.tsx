@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
@@ -22,7 +21,9 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
 import OrderDetails from "@/components/OrderDetails";
+import CreateSampleOrders from "@/components/CreateSampleOrders";
 
 type Order = {
   id: string;
@@ -44,6 +45,7 @@ const Orders = () => {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const { supabase, user } = useSupabase();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
     if (!user) {
@@ -53,12 +55,24 @@ const Orders = () => {
 
     const fetchOrders = async () => {
       try {
+        console.log("Fetching orders for user:", user.id);
         const { data, error } = await supabase
           .from("orders")
           .select("*")
+          .eq("user_id", user.id)
           .order("created_at", { ascending: false });
 
-        if (error) throw error;
+        if (error) {
+          console.error("Error fetching orders:", error);
+          toast({
+            variant: "destructive",
+            title: "Error fetching orders",
+            description: error.message,
+          });
+          throw error;
+        }
+        
+        console.log("Orders data:", data);
         setOrders(data || []);
       } catch (error) {
         console.error("Error fetching orders:", error);
@@ -68,7 +82,7 @@ const Orders = () => {
     };
 
     fetchOrders();
-  }, [user, navigate, supabase]);
+  }, [user, navigate, supabase, toast]);
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -115,14 +129,17 @@ const Orders = () => {
           </CardHeader>
           <CardContent>
             {orders.length === 0 ? (
-              <div className="text-center py-8">
+              <div className="text-center py-8 space-y-4">
                 <p className="text-gray-500">No orders found</p>
-                <Button
-                  onClick={() => navigate("/menu")}
-                  className="mt-4"
-                >
-                  Browse Menu
-                </Button>
+                <div className="flex flex-col gap-2 max-w-xs mx-auto">
+                  <Button
+                    onClick={() => navigate("/menu")}
+                    className="bg-orange-500 hover:bg-orange-600"
+                  >
+                    Browse Menu
+                  </Button>
+                  <CreateSampleOrders />
+                </div>
               </div>
             ) : (
               <div className="overflow-x-auto">
